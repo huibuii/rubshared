@@ -47,10 +47,19 @@ ChaCha specific functions. Look out for 'TODOs'. Here you need to add code.
 """
 
 def cyclic_shift(v, s):
-	digits = list(map(int, str(v))) # converts the integer value of v to
-	s %= len(digits) # in case s is larger than v we need to modular reduce
-	return digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
+	if not (0 <= v <= 0xFFFFFFFF):
+		raise TypeError("v ist nicht in der range")
 
+
+	digits = str(bin(v))[2:]
+
+	while (len(digits) < 32):
+		digits = "0" + digits
+
+	#digits = list(map(int, str(v))) # converts the integer value of v to a list
+	s %= len(digits) # in case s is larger than v we need to modular reduce
+	digits =  digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
+	return int(digits, 2) #convert list to int and return
 	"""
 	Returns rotation of v (32-bit integer) by s (integer from 0 to 32) positions to the left (cyclic)
 	:param v: 32-bit integer to be rotated
@@ -76,6 +85,43 @@ def init_chacha_state(key, nonce):
 	return state
 
 def quarterround(state_array,a,b,c,d):
+
+	def mod32addition(x,y):
+		x = (x + y) & 0xFFFFFFFF
+		return x
+
+	at = a
+	bt = b
+	ct = c
+	dt = d
+
+	a = int(state_array[at])
+	b = int(state_array[bt])
+	c = int(state_array[ct])
+	d = int(state_array[dt])
+
+	a = mod32addition(a,b)
+	d ^= a
+	d = cyclic_shift(d, 16)
+
+	c = mod32addition(c,d)
+	b ^= c
+	b = cyclic_shift(b, 12)
+
+	a = mod32addition(a,b)
+	d ^= a
+	d = cyclic_shift(d, 8)
+
+	c = mod32addition(c,d)
+	b ^= c
+	b = cyclic_shift(b, 7)
+
+	state_array[at] = a
+	state_array[bt] = b
+	state_array[ct] = c
+	state_array[dt] = d
+
+
 	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
 	:param state_array: the ChaCha state, a list of 16 32-bit integers.
 	:param a: Value between 0 and 15. Index for the the state array.
