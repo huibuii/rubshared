@@ -47,26 +47,24 @@ ChaCha specific functions. Look out for 'TODOs'. Here you need to add code.
 """
 
 def cyclic_shift(v, s):
-	if not (0 <= v <= 0xFFFFFFFF):
-		raise TypeError("v ist nicht in der range")
-
-
-	digits = str(bin(v))[2:]
-
-	while (len(digits) < 32):
-		digits = "0" + digits
-
-	#digits = list(map(int, str(v))) # converts the integer value of v to a list
-	s %= len(digits) # in case s is larger than v we need to modular reduce
-	digits =  digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
-	return int(digits, 2) #convert list to int and return
 	"""
 	Returns rotation of v (32-bit integer) by s (integer from 0 to 32) positions to the left (cyclic)
 	:param v: 32-bit integer to be rotated
 	:param s: number of positions to rotate
 	:return: rotated version of v
 	"""
-	return 0  # TODO: implement cyclic shift
+	# TODO: implement cyclic shift
+	if not (0 <= v <= 0xFFFFFFFF):
+		raise TypeError("v ist nicht in der range")
+
+	digits = str(bin(v))[2:]
+
+	while (len(digits) < 32):
+		digits = "0" + digits
+
+	s %= len(digits) # in case s is larger than v we need to modular reduce
+	digits =  digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
+	return int(digits, 2) #convert list to int and return
 
 def init_chacha_state(key, nonce):
 	"""
@@ -93,11 +91,25 @@ def init_chacha_state(key, nonce):
 
 	return state
 
+
+def mod32addition(x,y):
+	x = (x + y) & 0xFFFFFFFF
+	return x
+
+
 def quarterround(state_array,a,b,c,d):
 
-	def mod32addition(x,y):
-		x = (x + y) & 0xFFFFFFFF
-		return x
+	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
+	:param state_array: the ChaCha state, a list of 16 32-bit integers.
+	:param a: Value between 0 and 15. Index for the the state array.
+	:param b: Value between 0 and 15. Index for the the state array.
+	:param c: Value between 0 and 15. Index for the the state array.
+	:param d: Value between 0 and 15. Index for the the state array.
+	:return: no return value (changes are directly applied to the array due to 'call by reference').
+	"""
+	pass
+	# TODO: implement quarterround
+
 
 	at = a
 	bt = b
@@ -131,17 +143,6 @@ def quarterround(state_array,a,b,c,d):
 	state_array[dt] = d
 
 
-	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
-	:param state_array: the ChaCha state, a list of 16 32-bit integers.
-	:param a: Value between 0 and 15. Index for the the state array.
-	:param b: Value between 0 and 15. Index for the the state array.
-	:param c: Value between 0 and 15. Index for the the state array.
-	:param d: Value between 0 and 15. Index for the the state array.
-	:return: no return value (changes are directly applied to the array due to 'call by reference').
-	"""
-	pass
-	# TODO: implement quarterround
-
 def generate_chacha_keystream(state, block_count):
 	"""
 	ChaCha inner block function, for given state matrix and block number.
@@ -150,15 +151,31 @@ def generate_chacha_keystream(state, block_count):
 	:return: 64 bytes (current key stream block)
 	"""
 	# TODO: implement ChaCha inner block and adjust block_count
+
 	initial_state = state.copy()
 	state_out = state.copy()
+	state_out[12] = block_count
+	initial_state[12] = block_count
 
 	# converts the ChaCha state (a list of 16 32-bit integers) to a list of bytes
+	def inner_block(state):
+		quarterround(state, 0, 4, 8, 12)
+		quarterround(state, 1, 5, 9, 13)
+		quarterround(state, 2, 6, 10, 14)
+		quarterround(state, 3, 7, 11, 15)
+		quarterround(state, 0, 5, 10, 15)
+		quarterround(state, 1, 6, 11, 12)
+		quarterround(state, 2, 7, 8, 13)
+		quarterround(state, 3, 4, 9, 14)
+
+	for i in range(0,10):
+		inner_block(state_out)
+
+	for x in range (0,16):
+		state_out[x] = mod32addition(state_out[x],initial_state[x])
+
 	return struct.pack('<16L', *(state_out))
 
-"""
-Christmas project task-related stuff. Look out for 'TODOs'. Here you need to add code.
-"""
 
 def process_file(source_file='encrypted.zip', target_file='decrypted.zip'):
 	"""
@@ -173,17 +190,28 @@ def process_file(source_file='encrypted.zip', target_file='decrypted.zip'):
 
 	# TODO: implement keystream. Hard-code the key, nonce and block count here.
 
+	key   			  = 0xaf3d5cf9133ed833bd390ee187bb14f0da5aa23d4864c291a011b7bb031ac96d
+	nonce 			  = 0x081e13f87bb610c2044c1665
+	initialblockcount = 0
+	initialstate 	  = init_chacha_state(key, nonce)
+
 	if not Path(source_file).exists():
 		print(f'... {source_file} not found.')
 		return
 	f_out = open(target_file, "wb")
 
+	# TODO: implement en/decryption
 	with open(source_file, "rb") as f_in:
 		in_block = f_in.read(64) # read file input
+		blockcount = initialblockcount
 		while in_block:
+			keystream = generate_chacha_keystream(initialstate, blockcount)
+			message   = bytearray(len(in_block))
 			for i in range(len(in_block)):
-				f_out.write(bytes([0])) # TODO: implement en/decryption
+				message[i] =   keystream[i] ^ in_block[i]
+			f_out.write(message)
 			in_block = f_in.read(64)
+			blockcount += 1
 
 	f_out.close()
 
@@ -224,4 +252,4 @@ if __name__ == '__main__':
 
 	""" Task g) +  h) """
 
-	bruteforce(max_key_length=20)
+	"""bruteforce(max_key_length=20)"""
