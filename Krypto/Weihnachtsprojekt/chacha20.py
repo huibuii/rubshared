@@ -47,26 +47,24 @@ ChaCha specific functions. Look out for 'TODOs'. Here you need to add code.
 """
 
 def cyclic_shift(v, s):
-	if not (0 <= v <= 0xFFFFFFFF):
-		raise TypeError("v ist nicht in der range")
-
-
-	digits = str(bin(v))[2:]
-
-	while (len(digits) < 32):
-		digits = "0" + digits
-
-	#digits = list(map(int, str(v))) # converts the integer value of v to a list
-	s %= len(digits) # in case s is larger than v we need to modular reduce
-	digits =  digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
-	return int(digits, 2) #convert list to int and return
 	"""
 	Returns rotation of v (32-bit integer) by s (integer from 0 to 32) positions to the left (cyclic)
 	:param v: 32-bit integer to be rotated
 	:param s: number of positions to rotate
 	:return: rotated version of v
 	"""
-	return 0  # TODO: implement cyclic shift
+	# TODO: implement cyclic shift
+	if not (0 <= v <= 0xFFFFFFFF):
+		raise TypeError("v ist nicht in der range")
+
+	digits = str(bin(v))[2:]
+
+	while (len(digits) < 32):
+		digits = "0" + digits
+
+	s %= len(digits) # in case s is larger than v we need to modular reduce
+	digits =  digits[s:] + digits[:s] # The return value takes the bits from the s' position to LSB and concatenates the bits from MSB to s' position.
+	return int(digits, 2) #convert list to int and return
 
 def init_chacha_state(key, nonce):
 	"""
@@ -94,6 +92,17 @@ def init_chacha_state(key, nonce):
 	return state
 
 def quarterround(state_array,a,b,c,d):
+
+	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
+	:param state_array: the ChaCha state, a list of 16 32-bit integers.
+	:param a: Value between 0 and 15. Index for the the state array.
+	:param b: Value between 0 and 15. Index for the the state array.
+	:param c: Value between 0 and 15. Index for the the state array.
+	:param d: Value between 0 and 15. Index for the the state array.
+	:return: no return value (changes are directly applied to the array due to 'call by reference').
+	"""
+	pass
+	# TODO: implement quarterround
 
 	def mod32addition(x,y):
 		x = (x + y) & 0xFFFFFFFF
@@ -131,17 +140,6 @@ def quarterround(state_array,a,b,c,d):
 	state_array[dt] = d
 
 
-	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
-	:param state_array: the ChaCha state, a list of 16 32-bit integers.
-	:param a: Value between 0 and 15. Index for the the state array.
-	:param b: Value between 0 and 15. Index for the the state array.
-	:param c: Value between 0 and 15. Index for the the state array.
-	:param d: Value between 0 and 15. Index for the the state array.
-	:return: no return value (changes are directly applied to the array due to 'call by reference').
-	"""
-	pass
-	# TODO: implement quarterround
-
 def generate_chacha_keystream(state, block_count):
 	"""
 	ChaCha inner block function, for given state matrix and block number.
@@ -155,6 +153,10 @@ def generate_chacha_keystream(state, block_count):
 
 	# converts the ChaCha state (a list of 16 32-bit integers) to a list of bytes
 	return struct.pack('<16L', *(state_out))
+
+
+
+
 
 """
 Christmas project task-related stuff. Look out for 'TODOs'. Here you need to add code.
