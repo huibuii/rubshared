@@ -91,6 +91,12 @@ def init_chacha_state(key, nonce):
 
 	return state
 
+
+def mod32addition(x,y):
+	x = (x + y) & 0xFFFFFFFF
+	return x
+
+
 def quarterround(state_array,a,b,c,d):
 
 	""" Execute ChaCha quarterround on state at positions a,b,c,d of state_array.
@@ -104,9 +110,6 @@ def quarterround(state_array,a,b,c,d):
 	pass
 	# TODO: implement quarterround
 
-	def mod32addition(x,y):
-		x = (x + y) & 0xFFFFFFFF
-		return x
 
 	at = a
 	bt = b
@@ -148,19 +151,30 @@ def generate_chacha_keystream(state, block_count):
 	:return: 64 bytes (current key stream block)
 	"""
 	# TODO: implement ChaCha inner block and adjust block_count
+
 	initial_state = state.copy()
 	state_out = state.copy()
+	state_out[12] = block_count
 
 	# converts the ChaCha state (a list of 16 32-bit integers) to a list of bytes
+	def inner_block(state):
+		quarterround(state, 1, 5, 9, 13)
+		quarterround(state, 0, 4, 8, 12)
+		quarterround(state, 2, 6, 10, 14)
+		quarterround(state, 3, 7, 11, 15)
+		quarterround(state, 0, 5, 10, 15)
+		quarterround(state, 1, 6, 11, 12)
+		quarterround(state, 2, 7, 8, 13)
+		quarterround(state, 3, 4, 9, 14)
+
+	for i in range(0,10):
+		inner_block(state_out)
+
+	for x in range (0,16):
+		state_out[x] = mod32addition(state_out[x],initial_state[x])
+
 	return struct.pack('<16L', *(state_out))
 
-
-
-
-
-"""
-Christmas project task-related stuff. Look out for 'TODOs'. Here you need to add code.
-"""
 
 def process_file(source_file='encrypted.zip', target_file='decrypted.zip'):
 	"""
