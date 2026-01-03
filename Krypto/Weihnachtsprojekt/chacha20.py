@@ -155,11 +155,12 @@ def generate_chacha_keystream(state, block_count):
 	initial_state = state.copy()
 	state_out = state.copy()
 	state_out[12] = block_count
+	initial_state[12] = block_count
 
 	# converts the ChaCha state (a list of 16 32-bit integers) to a list of bytes
 	def inner_block(state):
-		quarterround(state, 1, 5, 9, 13)
 		quarterround(state, 0, 4, 8, 12)
+		quarterround(state, 1, 5, 9, 13)
 		quarterround(state, 2, 6, 10, 14)
 		quarterround(state, 3, 7, 11, 15)
 		quarterround(state, 0, 5, 10, 15)
@@ -189,17 +190,28 @@ def process_file(source_file='encrypted.zip', target_file='decrypted.zip'):
 
 	# TODO: implement keystream. Hard-code the key, nonce and block count here.
 
+	key   			  = 0xaf3d5cf9133ed833bd390ee187bb14f0da5aa23d4864c291a011b7bb031ac96d
+	nonce 			  = 0x081e13f87bb610c2044c1665
+	initialblockcount = 0
+	initialstate 	  = init_chacha_state(key, nonce)
+
 	if not Path(source_file).exists():
 		print(f'... {source_file} not found.')
 		return
 	f_out = open(target_file, "wb")
 
+	# TODO: implement en/decryption
 	with open(source_file, "rb") as f_in:
 		in_block = f_in.read(64) # read file input
+		blockcount = initialblockcount
 		while in_block:
+			keystream = generate_chacha_keystream(initialstate, blockcount)
+			message   = bytearray(len(in_block))
 			for i in range(len(in_block)):
-				f_out.write(bytes([0])) # TODO: implement en/decryption
+				message[i] =   keystream[i] ^ in_block[i]
+			f_out.write(message)
 			in_block = f_in.read(64)
+			blockcount += 1
 
 	f_out.close()
 
@@ -240,4 +252,4 @@ if __name__ == '__main__':
 
 	""" Task g) +  h) """
 
-	bruteforce(max_key_length=20)
+	"""bruteforce(max_key_length=20)"""
