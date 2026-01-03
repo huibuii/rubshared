@@ -81,7 +81,16 @@ def init_chacha_state(key, nonce):
 	nonce_as_bytes = struct.unpack('<3L', (nonce.to_bytes(12, "big")))
 	# Dummy initialization. Fills the state with zeros.
 	state = [0] * 16
+
 	# TODO: implement state initialization.
+	blockcounter = 0x1
+	constants = (0x61707865, 0x3320646e, 0x79622d32, 0x6b206574)
+
+	state[0:4] = constants
+	state[4:12] = key_as_ints
+	state[12] = blockcounter
+	state[13:16] = nonce_as_bytes
+
 	return state
 
 def quarterround(state_array,a,b,c,d):
