@@ -222,11 +222,42 @@ def bruteforce(max_key_length=18):
 	:param max_key_length: is the maximum key space size to be searched during the brute-force attacks.
 	:return:
 	"""
-	knownplaintext = str.encode("knownplaintext")
+	nonce = 0x4853e7373f57a43af1c4f89d
+	initalblockcount = 0
+	bitlist  = []
+	timelist = []
+
+	knownplaintext = str.encode("Weihnachtsprojekt WS2526")
 	for bits in range(1,max_key_length,1):
-		f_in = open(f'bruteforce_files/{bits}.txt', "rb")
+		f_in = open(f'template_and_files/bruteforce_files/{bits}.txt', "rb")
+		bitlist.append(pow(2,bits))
+
+		key = 0
 		cipher_text = f_in.read(len(knownplaintext))
+		start_time = time.time()
+
+		for i in range(pow(2, bits)):
+
+			initalstate = init_chacha_state(key, nonce)
+			keystream = generate_chacha_keystream(initalstate, initalblockcount)
+
+
+			decrypt_text = bytearray(len(knownplaintext))
+			for x in range(len(knownplaintext)):
+
+				decrypt_text[x] = cipher_text[x] ^ keystream[x]
+
+			if decrypt_text == knownplaintext:
+				print(f'Found key for {bits}.txt key={key}')
+				end_time = time.time()
+				timelist.append(end_time - start_time)
+				break
+
+			key+= 1
+
 		f_in.close()
+	plot_results(x_data=bitlist, y_data=timelist, x_label='Schlüsselraum (2^n)', y_label='Zeit (s)', filename=f'plot.png')
+	plot_results_log(x_data=bitlist, y_data=timelist, x_label='Schlüsselraum (2^n)', y_label='Zeit (s)', filename=f'plot_log.png')
 		# TODO: implement brute force
 
 	# TODO: for task h), use plot_results and plot_results_log to show runtime length over key length
@@ -252,4 +283,4 @@ if __name__ == '__main__':
 
 	""" Task g) +  h) """
 
-	"""bruteforce(max_key_length=20)"""
+	bruteforce(max_key_length=21)
