@@ -1,11 +1,8 @@
 import struct
-from turtledemo.clock import jump
-
 import matplotlib.pyplot as plt
 import time
 from pathlib import Path
 
-from fontTools.misc.eexec import decrypt
 
 
 def plot_results(x_data, y_data, x_label='xlabel', y_label='ylabel', filename='plot.png'):
