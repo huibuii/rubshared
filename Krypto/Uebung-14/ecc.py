@@ -65,3 +65,18 @@ def pointdoubling(x, y, a, p):
     xnew = (s**2 - 2*x) % p
     ynew = (s * (x - xnew) - y) % p
     return xnew, ynew
+
+def edgecases(x1, y1, x2, y2):
+
+
+
+    if x1 ==0 and y1 == 0 or x2 == 0 and y2 == 0:
+        """addition mit 0 """
+
+    if y2 == -y1 or y1 == -y2:
+       """return 0"""
+
+    if x1 == x2 and y1 == y2:
+        """pointdoubling"""
+    else:
+        """pointaddition"""
