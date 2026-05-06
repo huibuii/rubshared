@@ -1,3 +1,6 @@
+from sympy import true
+
+
 def extended_gcd(a, b):
     """Returns (gcd, x, y) such that a*x + b*y = gcd."""
     if a == 0:
@@ -28,17 +31,26 @@ def modular_inverse(a, p):
     return x % p  # Ensure the result is positive
 
 
-if __name__ == "__main__":
-    test_cases = [
-        (3, 11),    # 3 * 4 = 12 ≡ 1 (mod 11)  → 4
-        (10, 17),   # 10 * 12 = 120 ≡ 1 (mod 17) → 12
-        (7, 26),    # 7 * 15 = 105 ≡ 1 (mod 26)  → 15
-        (2, 4),     # No inverse: gcd(2,4) = 2
-    ]
+def checkcurve(a, b, p):
 
-    for a, p in test_cases:
-        try:
-            inv = modular_inverse(a, p)
-            print(f"modular_inverse({a}, {p}) = {inv}  →  verify: ({a} * {inv}) % {p} = {(a * inv) % p}")
-        except ValueError as e:
-            print(f"modular_inverse({a}, {p}) → Error: {e}")
+    a = 4 * a**3 % p
+    b = 27 * b**2 % p
+    res = (a + b) % p
+    if res == 0:
+        raise ValueError("the elliptic curve doesnt meet the requirements.")
+    else:
+        return True
+
+
+def pointaddition(x1, y1, x2, y2, p):
+
+    yu = (y2 - y1) % p
+    xu = (x2 - x1) % p
+    xuinv = modular_inverse(xu, p)
+    s = yu * xuinv % p
+    # calc new point
+    xnew = (s**2 - x1 - x2) % p
+    ynew = (s * (x1 - xnew) - y1) % p
+    return xnew, ynew
+
+
