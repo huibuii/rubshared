@@ -54,3 +54,14 @@ def pointaddition(x1, y1, x2, y2, p):
     return xnew, ynew
 
 
+def pointdoubling(x, y, a, p):
+
+    xu = (3*x**2 + a) % p
+    yu = (2*y) % p
+    yinv = modular_inverse(yu, p)
+
+    s = xu * yinv % p
+    # calc new point
+    xnew = (s**2 - 2*x) % p
+    ynew = (s * (x - xnew) - y) % p
+    return xnew, ynew
