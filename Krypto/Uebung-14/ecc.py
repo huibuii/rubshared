@@ -145,9 +145,9 @@ if __name__ == "__main__":
 
     if P.x == Q.x and P.y == Q.y:
         """pointdoubling"""
-        print(pointdoubling(P, E.a, E.p))
+        print("Point doubling", pointdoubling(P, E.a, E.p))
         exit(0)
     else:
         """pointaddition"""
-        print(pointaddition(P, Q, E.p))
+        print("Point addition", pointaddition(P, Q, E.p))
         exit(0)
