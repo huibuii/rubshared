@@ -93,7 +93,7 @@ def print_help():
     print("Parameters:")
     print("  -P        : coordinates of point P")
     print("  -Q        : coordinates of point Q")
-    print("  -a, -b    : curve parameters of y² = x³ + ax + b")
+    print("  -a, -b    : curve parameters of y\u00B2 = x\u00B3 + ax + b")
     print("  -p        : prime modulus")
     print()
     print("Example:  python script.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             case "-E":
                 e = values[i + 1].strip("()").split(",")
                 E = Curve(int(e[0]), int(e[1]), int(e[2]))
-                print("Curve E: y^2 = x^3 +",E.a,"x +", E.b,"mod",E.p)
+                print(f"Curve E: y\u00B2 = x\u00B3 + {E.a}x + {E.b} mod {E.p}")
             case _:
                 print(f"Unbekannter Parameter: {values[i]}")
                 raise SystemExit(1)
