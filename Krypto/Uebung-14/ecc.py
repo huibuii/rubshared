@@ -68,8 +68,6 @@ def pointdoubling(x, y, a, p):
 
 def edgecases(x1, y1, x2, y2, a ,b ,p):
 
-
-
     if x1 ==0 and y1 == 0:
         """addition mit 0 """
         return x2, y2
@@ -78,6 +76,8 @@ def edgecases(x1, y1, x2, y2, a ,b ,p):
 
     if y2 == -y1:
        """return 0"""
+       print("")
+
 
     if x1 == x2 and y1 == y2:
         """pointdoubling"""
