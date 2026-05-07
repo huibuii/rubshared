@@ -88,7 +88,7 @@ def print_help():
     print("Parameters:")
     print("  -P        : coordinates of point P")
     print("  -Q        : coordinates of point Q")
-    print("  -E    : curve parameters of y\u00B2 = x\u00B3 + ax + b")
+    print("  -E        : curve parameters of y\u00B2 = x\u00B3 + ax + b")
     print()
     print("Example:             python ecc.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
     print("Point at infinity:   python ecc.py -P \"(1,2)\" -Q \"()\" -E \"(4,7,41)\"")
