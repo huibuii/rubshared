@@ -96,7 +96,7 @@ def print_help():
     print("  -a, -b    : curve parameters of y² = x³ + ax + b")
     print("  -p        : prime modulus")
     print()
-    print("Example:  python script.py -P (1,2) -Q (1,3) -E (4,7,41)")
+    print("Example:  python script.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
 
 
 if __name__ == "__main__":
@@ -145,9 +145,9 @@ if __name__ == "__main__":
 
     if P.x == Q.x and P.y == Q.y:
         """pointdoubling"""
-        print("Point doubling", pointdoubling(P, E.a, E.p))
+        print("Point doubling, R: ", pointdoubling(P, E.a, E.p))
         exit(0)
     else:
         """pointaddition"""
-        print("Point addition", pointaddition(P, Q, E.p))
+        print("Point addition, R: ", pointaddition(P, Q, E.p))
         exit(0)
