@@ -120,10 +120,10 @@ if __name__ == "__main__":
             case "-E":
                 e = values[i + 1].strip("()").split(",")
                 E = Curve(int(e[0]), int(e[1]), int(e[2]))
-                print("Curve E: ", E)
+                print("Curve E: y^2 = x^3 +",E.a,"x +", E.b,"mod",E.p)
             case _:
                 print(f"Unbekannter Parameter: {values[i]}")
-                sys.exit(1)
+                raise SystemExit(1)
         i += 2
     
     checkcurve(E.a, E.b, E.p)
@@ -132,22 +132,22 @@ if __name__ == "__main__":
     if Q.is_infinity:
         """addition mit 0 """
         print(P)
-        exit(0)
+        raise SystemExit(0)
     elif P.is_infinity:
         print(Q)
-        exit(0)
+        raise SystemExit(0)
 
     if Q.x == P.x and Q.y == -P.y:
        R = Point()
        print(R)
-       exit(0)
+       raise SystemExit(0)
 
 
     if P.x == Q.x and P.y == Q.y:
         """pointdoubling"""
         print("Point doubling, R: ", pointdoubling(P, E.a, E.p))
-        exit(0)
+        raise SystemExit(0)
     else:
         """pointaddition"""
         print("Point addition, R: ", pointaddition(P, Q, E.p))
-        exit(0)
+        raise SystemExit(0)
