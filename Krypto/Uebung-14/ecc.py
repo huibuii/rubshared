@@ -1,4 +1,5 @@
 class Point:
+    """this class defines the structure of a point and also implements the point at infinity"""
     def __init__(self, x=None, y=None):
         self.x = x
         self.y = y
@@ -10,6 +11,7 @@ class Point:
         return f"({self.x}, {self.y})"
 
 class Curve:
+    """this class defines the elliptic curve components"""
     def __init__(self, a, b, p):
         self.a = a
         self.b = b
@@ -29,13 +31,7 @@ def extended_gcd(a, b):
 
 
 def modular_inverse(a, p):
-    """
-    Calculates the modular inverse of a mod p.
-    Returns x such that (a * x) % p == 1.
-
-    Raises ValueError if the inverse does not exist
-    (i.e. gcd(a, p) != 1).
-    """
+    """this class handles the logic around the modular inverse function and therefore calls the extended_gcd function to calculate the Euclidean algorithm"""
     a = a % p  # Normalize in case a >= p or a is negative
     gcd, x, _ = extended_gcd(a, p)
 
@@ -49,7 +45,7 @@ def modular_inverse(a, p):
 
 
 def checkcurve(a, b, p):
-
+    """this function assures that the curve meets the requirements for cryptographic elliptic curves"""
     a = 4 * a**3 % p
     b = 27 * b**2 % p
     res = (a + b) % p
@@ -59,7 +55,7 @@ def checkcurve(a, b, p):
 
 
 def pointaddition(P:Point, Q:Point, p):
-
+    """this function adds two points P and Q"""
     yu = (Q.y - P.y) % p
     xu = (Q.x - P.x) % p
     xuinv = modular_inverse(xu, p)
@@ -71,7 +67,7 @@ def pointaddition(P:Point, Q:Point, p):
 
 
 def pointdoubling(P:Point, a, p):
-
+    """this function adds a point to itself"""
     xu = (3*P.x**2 + a) % p
     yu = (2*P.y) % p
     yinv = modular_inverse(yu, p)
@@ -83,9 +79,8 @@ def pointdoubling(P:Point, a, p):
     return Point(xnew, ynew)
 
 
-import sys
-
 def print_help():
+    """print the help menu for this script"""
     print("ECC Group Operations")
     print("====================")
     print("Usage:   python ecc.py -P <(x,y)> -Q <(x,y)> -E <(a,b,p)>")
@@ -95,11 +90,21 @@ def print_help():
     print("  -Q        : coordinates of point Q")
     print("  -E    : curve parameters of y\u00B2 = x\u00B3 + ax + b")
     print()
-    print("Example:  python ecc.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
-
+    print("Example:             python ecc.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
+    print("Point at infinity:   python ecc.py -P \"(1,2)\" -Q \"()\" -E \"(4,7,41)\"")
 
 if __name__ == "__main__":
-    argv = __import__("sys").argv
+
+    """
+    main logic of the script which handles: 
+    1. input arguments
+    2. creates the points P, Q and the elliptic curve E 
+    3. checks for edgecases 
+    4. does the point addition or pointdoubling according to the specific case
+    5. returns P + Q = R
+    """
+
+    argv = __import__("sys").argv # access sys.argv without import statement using built-in __import__
     if len(argv) == 1 or "--help" in argv or "-h" in argv:
         print_help()
         raise SystemExit(0)
@@ -128,29 +133,25 @@ if __name__ == "__main__":
             case "-E":
                 ev = values[i + 1].strip("()").split(",")
                 if len(ev) != 3:
-                    print(f"wrong input for curve: {values[i + 1]}")
-                    raise SystemExit(1)
+                    raise ValueError(f"wrong input for curve: {values[i + 1]}")
+
                 E = Curve(int(ev[0]), int(ev[1]), int(ev[2]))
                 print(f"Curve E: y\u00B2 = x\u00B3 + {E.a}x + {E.b} mod {E.p}")
             case _:
-                print(f"unknown parameter: {values[i]}")
-                raise SystemExit(1)
+                raise ValueError(f"unknown parameter: {values[i]}")
+
         i += 2
 
     if P is None:
-        print(f"P is missing")
-        raise SystemExit(1)
+        raise ValueError(f"P is missing")
     if Q is None:
-        print(f"Q is missing")
+        raise ValueError(f"Q is missing")
     if E is None:
-        print(f"E is missing")
-        raise SystemExit(1)
+        raise ValueError(f"E is missing")
 
     checkcurve(E.a, E.b, E.p)
 
-
     if Q.is_infinity:
-        """addition mit 0 """
         print(P)
         raise SystemExit(0)
     elif P.is_infinity:
@@ -164,10 +165,8 @@ if __name__ == "__main__":
 
 
     if P.x == Q.x and P.y == Q.y:
-        """pointdoubling"""
         print("Point doubling, R: ", pointdoubling(P, E.a, E.p))
         raise SystemExit(0)
     else:
-        """pointaddition"""
         print("Point addition, R: ", pointaddition(P, Q, E.p))
         raise SystemExit(0)
