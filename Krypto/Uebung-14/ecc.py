@@ -107,25 +107,46 @@ if __name__ == "__main__":
 
     values = argv[1:]
     i = 0
+    P = None
+    Q = None
+    E = None
     while i < len(values) - 1:
         match values[i]:
             case "-P":
-                p = values[i + 1].strip("()").split(",")
-                P = Point(int(p[0]), int(p[1]))
+                pv = values[i + 1].strip("()").split(",")
+                if len(pv) != 2:
+                    P = Point()
+                else:
+                    P = Point(int(pv[0]), int(pv[1]))
                 print("Point P: ", P)
             case "-Q":
-                q = values[i + 1].strip("()").split(",")
-                Q = Point(int(q[0]), int(q[1]))
+                qv = values[i + 1].strip("()").split(",")
+                if len(qv) != 2:
+                    Q = Point()
+                else:
+                    Q = Point(int(qv[0]), int(qv[1]))
                 print("Point Q: ", Q)
             case "-E":
-                e = values[i + 1].strip("()").split(",")
-                E = Curve(int(e[0]), int(e[1]), int(e[2]))
+                ev = values[i + 1].strip("()").split(",")
+                if len(ev) != 3:
+                    print(f"falsche Eingabe für die Kurve: {values[i + 1]}")
+                    raise SystemExit(1)
+                E = Curve(int(ev[0]), int(ev[1]), int(ev[2]))
                 print(f"Curve E: y\u00B2 = x\u00B3 + {E.a}x + {E.b} mod {E.p}")
             case _:
                 print(f"Unbekannter Parameter: {values[i]}")
                 raise SystemExit(1)
         i += 2
-    
+
+    if P is None:
+        print(f"P ist nicht vorhanden")
+        raise SystemExit(1)
+    if Q is None:
+        print(f"Q ist nicht vorhanden")
+    if E is None:
+        print(f"E ist nicht vorhanden")
+        raise SystemExit(1)
+
     checkcurve(E.a, E.b, E.p)
 
 
