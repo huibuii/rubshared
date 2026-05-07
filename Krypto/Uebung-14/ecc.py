@@ -152,13 +152,13 @@ if __name__ == "__main__":
     checkcurve(E.a, E.b, E.p)
 
     if Q.is_infinity:
-        print(P)
+        print(f"Q is point at infinity therefore the result is P: {P}")
         raise SystemExit(0)
     elif P.is_infinity:
-        print(Q)
+        print(f"P is point at infinity therefore the result is Q: {Q}")
         raise SystemExit(0)
 
-    if Q.x == P.x and Q.y == -P.y:
+    if P.x == Q.x and (P.y + Q.y) % E.p == 0:
        R = Point()
        print(R)
        raise SystemExit(0)
