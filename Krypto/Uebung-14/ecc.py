@@ -88,15 +88,14 @@ import sys
 def print_help():
     print("ECC Group Operations")
     print("====================")
-    print("Usage:   python ecc.py -P <(x,y)> -Q <(x,y)> -a <a> -b <b> -p <p>")
+    print("Usage:   python ecc.py -P <(x,y)> -Q <(x,y)> -E <(a,b,p)>")
     print()
     print("Parameters:")
     print("  -P        : coordinates of point P")
     print("  -Q        : coordinates of point Q")
-    print("  -a, -b    : curve parameters of y\u00B2 = x\u00B3 + ax + b")
-    print("  -p        : prime modulus")
+    print("  -E    : curve parameters of y\u00B2 = x\u00B3 + ax + b")
     print()
-    print("Example:  python script.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
+    print("Example:  python ecc.py -P \"(1,2)\" -Q \"(1,3)\" -E \"(4,7,41)\"")
 
 
 if __name__ == "__main__":
@@ -129,22 +128,22 @@ if __name__ == "__main__":
             case "-E":
                 ev = values[i + 1].strip("()").split(",")
                 if len(ev) != 3:
-                    print(f"falsche Eingabe für die Kurve: {values[i + 1]}")
+                    print(f"wrong input for curve: {values[i + 1]}")
                     raise SystemExit(1)
                 E = Curve(int(ev[0]), int(ev[1]), int(ev[2]))
                 print(f"Curve E: y\u00B2 = x\u00B3 + {E.a}x + {E.b} mod {E.p}")
             case _:
-                print(f"Unbekannter Parameter: {values[i]}")
+                print(f"unknown parameter: {values[i]}")
                 raise SystemExit(1)
         i += 2
 
     if P is None:
-        print(f"P ist nicht vorhanden")
+        print(f"P is missing")
         raise SystemExit(1)
     if Q is None:
-        print(f"Q ist nicht vorhanden")
+        print(f"Q is missing")
     if E is None:
-        print(f"E ist nicht vorhanden")
+        print(f"E is missing")
         raise SystemExit(1)
 
     checkcurve(E.a, E.b, E.p)
