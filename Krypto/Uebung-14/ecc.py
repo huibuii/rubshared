@@ -9,6 +9,15 @@ class Point:
             return "O (point at infinity)"
         return f"({self.x}, {self.y})"
 
+class Curve:
+    def __init__(self, a, b, p):
+        self.a = a
+        self.b = b
+        self.p = p
+
+    def __str__(self):
+        return f"({self.a}, {self.b}, {self.p})"
+
 def extended_gcd(a, b):
     """Returns (gcd, x, y) such that a*x + b*y = gcd."""
     if a == 0:
@@ -87,53 +96,37 @@ def print_help():
     print("  -a, -b    : curve parameters of y² = x³ + ax + b")
     print("  -p        : prime modulus")
     print()
-    print("Example:  python script.py -P (1,2) -Q (1,3) -a 4 -b 7 -p 41")
+    print("Example:  python script.py -P (1,2) -Q (1,3) -E (4,7,41)")
 
-
-def parse_args(argv):
-    args = {}
-    required = {"-P", "-Q", "-a", "-b", "-p"}
-
-    i = 0
-    while i < len(argv):
-        if argv[i] in required:
-            if i + 1 >= len(argv):
-                print(f"Error: missing value for {argv[i]}")
-                print()
-                print_help()
-                raise SystemExit(1)
-            args[argv[i].lstrip("-")] = int(argv[i + 1])
-            i += 2
-        else:
-            print(f"Error: unknown parameter '{argv[i]}'")
-            print()
-            print_help()
-            raise SystemExit(1)
-
-    missing = [r for r in required if r.lstrip("-") not in args]
-    if missing:
-        print("Error: missing parameters:", ", ".join(missing))
-        print()
-        print_help()
-        raise SystemExit(1)
-
-    return args
 
 if __name__ == "__main__":
     argv = __import__("sys").argv
-
     if len(argv) == 1 or "--help" in argv or "-h" in argv:
         print_help()
         raise SystemExit(0)
 
-    args = parse_args(argv[1:])
-    a, b, p = args["a"], args["b"], args["p"]
-
-    # if x/y missing → point at infinity
-    P = Point(args.get("x1"), args.get("y1"))
-    Q = Point(args.get("x2"), args.get("y2"))
-
-    checkcurve(a, b, p)
+    values = argv[1:]
+    i = 0
+    while i < len(values) - 1:
+        match values[i]:
+            case "-P":
+                p = values[i + 1].strip("()").split(",")
+                P = Point(int(p[0]), int(p[1]))
+                print("Point P: ", P)
+            case "-Q":
+                q = values[i + 1].strip("()").split(",")
+                Q = Point(int(q[0]), int(q[1]))
+                print("Point Q: ", Q)
+            case "-E":
+                e = values[i + 1].strip("()").split(",")
+                E = Curve(int(e[0]), int(e[1]), int(e[2]))
+                print("Curve E: ", E)
+            case _:
+                print(f"Unbekannter Parameter: {values[i]}")
+                sys.exit(1)
+        i += 2
+    
+    checkcurve(E.a, E.b, E.p)
 
 
     if Q.is_infinity:
@@ -152,9 +145,9 @@ if __name__ == "__main__":
 
     if P.x == Q.x and P.y == Q.y:
         """pointdoubling"""
-        print(pointdoubling(P, a, p))
+        print(pointdoubling(P, E.a, E.p))
         exit(0)
     else:
         """pointaddition"""
-        print(pointaddition(P, Q, p))
+        print(pointaddition(P, Q, E.p))
         exit(0)
