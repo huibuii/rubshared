@@ -75,6 +75,6 @@ if __name__ == "__main__":
     if n is None:
         raise ValueError(f"n is missing")
 
-    print("Berechne: ", x, "^", d, "mod", n)
+    print(f"Berechne: {x}^{d} mod {n}")
 
     print ("Ergebnis: ", sqm(x,d,n))
