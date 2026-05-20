@@ -3,19 +3,20 @@ import sys
 
 def square(a,c):
     result = (a * a) % c
-    print(f"Square: A = A^2 = {a}^2 mod {c} = {result}")
+    print(f"&\\text{{Square:}} &A &= A^2 = {a}^2 \\mod {c} \\equiv {result}\\\\")
     return result
 
 def multiply(a,b,c):
     result = (a * b) % c
-    print(f"Multiply: A = A * x = {a} * {b} mod {c} = {result}")
+    print(f"&\\text{{Multiply:}} &A &= A \\cdot x = {a} \\cdot {b} \\mod {c} \\equiv {result}\\\\")
     return result
 
 def sqm(x,d,n):
-    print("d = ", d, "=", bin(d)[2:])
+    print(f"\\text{{Berechne:}} {x}^{{{d}}} \\mod {n}\\\\")
+    print(f"d = {d} = {bin(d)[2:]}_2\\\\")
+    print("\\begin{aligned}")
     print()
-    print("-----------------------------")
-    print("Initialisierung: A = x =", x)
+    print("&\\text{Initialisierung:} &A &= x =", x, "\\\\")
     print()
     result = x
 
@@ -29,6 +30,7 @@ def sqm(x,d,n):
             print()
         else:
             raise ValueError(f"Bad bit: {bit}")
+    print("\\end{aligned}")
     return result
 
 def print_help():
@@ -65,7 +67,6 @@ if __name__ == "__main__":
                 n = int(values[i + 1])
             case _:
                 raise ValueError(f"unknown parameter: {values[i]}")
-
         i += 2
 
     if x is None:
@@ -75,6 +76,4 @@ if __name__ == "__main__":
     if n is None:
         raise ValueError(f"n is missing")
 
-    print(f"Berechne: {x}^{d} mod {n}")
-
-    print ("Ergebnis: ", sqm(x,d,n))
+    print ("\\\\\\text{Ergebnis: } ", "\\boxed{" ,  sqm(x,d,n), "}")
