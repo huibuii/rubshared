@@ -1,20 +1,32 @@
 def rsa_keys(p, q, e):
     # Implement here
+    n=p*q
+    phin=(p-1)*(q-1)
+    d = pow(e, -1, phin)
+    return (n, d)
     pass
 
 
 def encrypt(m, e, n):
     # Implement here
+    c = pow(m, e, n)
+    return c
     pass
 
 
 def decrypt(c, d, n):
     # Implement here
+    m = pow(c, d, n)
+    return m
     pass
 
 
 def recover_message(c, e, n, r, oracle):
     # Implement here
+    c2 = (c * pow(r, e, n)) % n
+    m2 = oracle(c2)
+    m = (m2 * pow(r, -1, n)) % n
+    return m
     pass
 
 
