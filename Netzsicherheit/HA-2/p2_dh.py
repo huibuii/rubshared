@@ -1,15 +1,28 @@
 def dh_values(p, g, a, b):
     # Implement here
+    A = pow(g, a, p)
+    B = pow(g, b, p)
+    kA = pow(A, b, p)
+    kB=pow(B, a, p)
+    return A, B, kA, kB
     pass
 
 
 def discrete_log(p, g, value):
     # Implement here
+    for i in range(0, p-2):
+        temp = pow(g, i, p)
+        if temp == value:
+            return i
+    return None
     pass
 
 
 def passive_key(p, g, A, B):
     # Implement here
+    a = discrete_log(p,g,A)
+    kAB = pow(B, a, p)
+    return kAB
     pass
 
 

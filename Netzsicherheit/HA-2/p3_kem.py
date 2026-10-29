@@ -9,16 +9,26 @@ def derive_key(shared, p):
 
 def encapsulate(p, g, public_b, a):
     # Implement here
+    X = pow(g,a,p)
+    shared = pow(public_b, a, p)
+    key = derive_key(shared, p)
+    return X, key
     pass
 
 
 def decapsulate(p, b, X):
     # Implement here
+    k = pow(X, b, p)
+    key = derive_key(k, p)
+    return key
     pass
 
 
 def has_repeated_x(values):
     # Implement here
+    if len(values) != len(set(values)):
+        return True
+    return False
     pass
 
 
